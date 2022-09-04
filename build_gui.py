@@ -3,6 +3,11 @@ import gui
 import universalisAPI as uapi
 import fetchItemIDs as fetch
 import sys
+import pandas as pd
+import json
+
+dcs = uapi.data_centers()
+worlds = uapi.worlds()
 
 class GUI(object):
     def __init__(self):
@@ -62,5 +67,31 @@ class GUI(object):
         # self.comboBox_2
         return
 
+def dc_json() -> pd.DataFrame:
+    df = pd.read_json(json.dumps(dcs))
+    df = df.set_index('region')
+    return df
+
+def worlds_json() -> pd.DataFrame:
+    df = pd.read_json(json.dumps(worlds))
+    df = df.set_index('id')
+    return df
+
+def dc_list(data_center:str) -> list:
+    dc_return = []
+    _dc_list_ = dc_json().to_numpy()
+
+    for dc in _dc_list_:
+        if dc[0] == data_center:
+            dc_return.append(dc)
+
+    return dc_return
+
+def world_list(data_center:str, dc_info:list) -> list:
+    
+    return
+
 if __name__ == "__main__":
-    ui = GUI()
+    # ui = GUI()
+
+    print('asdfasdfasdf')

@@ -19,7 +19,7 @@
      <rect>
       <x>40</x>
       <y>100</y>
-      <width>491</width>
+      <width>551</width>
       <height>411</height>
      </rect>
     </property>
@@ -75,7 +75,7 @@
    <widget class="QPushButton" name="clearButton">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>480</x>
       <y>520</y>
       <width>112</width>
       <height>34</height>
@@ -88,7 +88,7 @@
    <widget class="QWidget" name="formLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>610</x>
       <y>100</y>
       <width>331</width>
       <height>111</height>
@@ -236,6 +236,12 @@
    <addaction name="menuShortcuts"/>
   </widget>
   <action name="actionAdd">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Add</string>
    </property>

@@ -12,8 +12,6 @@ __lodestone_info = pd.read_csv(CSV, sep=',', low_memory=False, header=1, skiprow
 __lodestone_urls = requests.get(LODESTONE_ITEM_URLID).text.splitlines()
 
 
-
-
 def fetch_lodestone_page(itemID:int) -> str:
     url_id = __lodestone_urls[itemID-1]
     url = LODESTONE_BASE_URL + url_id
