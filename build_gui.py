@@ -137,6 +137,70 @@ def world_list(data_center:str, dc_info:list) -> list:
 
     return None
 
+def interperate_current_mb(data:json, region:str=None, dcName:str='All', worldName:str='All') -> pd.DataFrame:
+    """
+    This method takes an individual entry from universalis and translates it into a usable dataframe
+        Note: This data is pre-sorted and does not need sorting
+
+    Specifying a dcName requires a region to be set, and will filter entries to only that data center
+    Specifying a world name will filter down to only entries from that world otherwise it will check all worlds
+    """
+
+    ppu = []
+    quantity = []
+    worldNames = []
+    hq = []
+    materia = []
+    retainerNames = []
+    total = []
+    # listings = []
+
+    worldList = []
+    if not dcName == 'All':
+        assert(not region == None)
+        # If the dcName is set to all we do not need to care about the region and it can be a skipped entry
+        worldList = world_list(dcName, dc_list(region))
+
+    for listing in data['listings']:
+        """
+        Used entries from the listing: pricePerUnit, quantity, worldName, hq,
+            materia, retainerName, total
+
+        Unused entries from the listing: lastReviewTime, stainID, worldID,
+            creatorName, creatorID, isCrafted, listingID, onMannequin,
+            retainerCity, retainerID, sellerID
+        """
+
+        if not dcName == 'All':
+            # if the data center is not set as the generic entry
+            # check if the world is part of the dc
+            # print(worldList)
+            if listing['worldName'] not in worldList:
+                # print(worldName)
+                # if not part of the dc skip it
+                continue
+
+            if not (worldName == 'All' or listing['worldName'] == worldName):
+                # if the user selected a world to filter the results to,
+                # and the the listing is not from the world they filtered the results to
+                # skip this entry
+                continue
+
+        # If the entry passed the dc/world check add the entry to the future dataframe fields
+        ppu.append(listing['pricePerUnit'])
+        quantity.append(listing['quantity'])
+        worldNames.append(listing['worldName'])
+        hq.append(listing['hq'])
+        materia.append(listing['materia'])
+        retainerNames.append(listing['retainerName'])
+        total.append(listing['total'])
+        # listings.append(listing) # back up
+
+    # Make the dataframe
+    mb_data = pd.DataFrame({'Price Per Unit':ppu, 'Quantity':quantity, 'Total':total, 'HQ':hq,
+        'Materia':materia, 'Retaner':retainerNames, 'World': worldNames})
+
+    return mb_data
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = GUI()
