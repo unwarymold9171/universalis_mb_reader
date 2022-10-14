@@ -6,8 +6,9 @@ import sys
 import pandas as pd
 import json
 
-dcs = uapi.data_centers()
-worlds = uapi.worlds()
+DC_JSON = uapi.data_centers()
+WORLDS = uapi.worlds()
+MARKETABLE_ITEMS = uapi.marketable_items()
 
 class GUI(object):
     def __init__(self):
@@ -17,7 +18,6 @@ class GUI(object):
         self.ui.setupUi(MainWindow)
 
         self._set_custom_action()
-        # self.default_dc_world_list()
         self.data_center_menu_update()
         self._hide_shortcuts()
 
@@ -107,16 +107,26 @@ class GUI(object):
         return
 
 def dc_json_to_pandas() -> pd.DataFrame:
-    df = pd.read_json(json.dumps(dcs))
+    """
+    This converts the data center json from universalis to a more maintanable DataFrame
+    """
+    df = pd.read_json(json.dumps(DC_JSON))
     df = df.set_index('region')
     return df
 
 def worlds_json_to_pandas() -> pd.DataFrame:
-    df = pd.read_json(json.dumps(worlds))
+    """
+    This converts the world json from universalis to a more maintanable DataFrame
+    """
+    df = pd.read_json(json.dumps(WORLDS))
     df = df.set_index('id')
     return df
 
 def dc_list(region_center:str) -> list:
+    """
+    This function creates a list of data centers that are in a given region
+        > 中国 and China will return the same value
+    """
     dc_return = []
     _dc_list_ = dc_json_to_pandas().reset_index().to_numpy()
 
@@ -127,6 +137,9 @@ def dc_list(region_center:str) -> list:
     return dc_return
 
 def world_list(data_center:str, dc_info:list) -> list:
+    """
+    This will split the list of worlds to just those from a single data center
+    """
     world_names = worlds_json_to_pandas().T
 
     for dc in dc_info:
