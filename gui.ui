@@ -6,212 +6,286 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1508</width>
-    <height>1067</height>
+    <width>983</width>
+    <height>1226</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="verticalLayoutWidget">
+   <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>100</y>
-      <width>551</width>
-      <height>411</height>
+      <x>600</x>
+      <y>50</y>
+      <width>351</width>
+      <height>151</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLineEdit" name="itemIdAdd">
-         <property name="inputMethodHints">
-          <set>Qt::ImhDigitsOnly</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="addButton">
+    <property name="title">
+     <string>GroupBox</string>
+    </property>
+    <widget class="QWidget" name="formLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>331</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <property name="labelAlignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="regionComboBox">
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
+        <property name="statusTip">
+         <string notr="true"/>
+        </property>
+        <property name="whatsThis">
+         <string notr="true"/>
+        </property>
+        <property name="accessibleName">
+         <string notr="true"/>
+        </property>
+        <property name="accessibleDescription">
+         <string notr="true"/>
+        </property>
+        <property name="currentText">
+         <string notr="true">North-America</string>
+        </property>
+        <item>
          <property name="text">
-          <string>Add</string>
+          <string notr="true">North-America</string>
          </property>
-         <property name="shortcut">
-          <string>Enter</string>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Japan</string>
          </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QListWidget" name="idList">
-         <property name="alternatingRowColors">
-          <bool>true</bool>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Europe</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QListWidget" name="nameList">
-         <property name="alternatingRowColors">
-          <bool>true</bool>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">Oceania</string>
          </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">China</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">中国</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="regionLabel">
+        <property name="text">
+         <string>Region:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="dcLabel">
+        <property name="text">
+         <string>Data Center:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="worldLabel">
+        <property name="text">
+         <string>World:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="dcComboBox">
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
+        <property name="statusTip">
+         <string notr="true"/>
+        </property>
+        <property name="whatsThis">
+         <string notr="true"/>
+        </property>
+        <property name="accessibleName">
+         <string notr="true"/>
+        </property>
+        <property name="accessibleDescription">
+         <string notr="true"/>
+        </property>
+        <property name="currentText">
+         <string notr="true"/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="worldComboBox">
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
+        <property name="statusTip">
+         <string notr="true"/>
+        </property>
+        <property name="whatsThis">
+         <string notr="true"/>
+        </property>
+        <property name="accessibleName">
+         <string notr="true"/>
+        </property>
+        <property name="accessibleDescription">
+         <string notr="true"/>
+        </property>
+        <property name="currentText">
+         <string notr="true"/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </widget>
-   <widget class="QPushButton" name="clearButton">
+   <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>480</x>
-      <y>520</y>
-      <width>112</width>
+      <x>10</x>
+      <y>50</y>
+      <width>571</width>
+      <height>481</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>GroupBox</string>
+    </property>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>551</width>
+       <height>411</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLineEdit" name="itemIdAdd">
+          <property name="inputMethodHints">
+           <set>Qt::ImhDigitsOnly</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="addButton">
+          <property name="text">
+           <string>Add</string>
+          </property>
+          <property name="shortcut">
+           <string>Enter</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QListWidget" name="idList">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListWidget" name="nameList">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QPushButton" name="clearButton">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>440</y>
+       <width>112</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Clear</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="removeButton">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>440</y>
+       <width>112</width>
+       <height>34</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Remove</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="queryButton">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>540</y>
+      <width>131</width>
       <height>34</height>
      </rect>
     </property>
     <property name="text">
-     <string>Clear</string>
+     <string>Query</string>
     </property>
    </widget>
-   <widget class="QWidget" name="formLayoutWidget">
+   <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>100</y>
-      <width>331</width>
-      <height>111</height>
+      <x>20</x>
+      <y>580</y>
+      <width>551</width>
+      <height>571</height>
      </rect>
     </property>
-    <layout class="QFormLayout" name="formLayout">
-     <property name="labelAlignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="regionComboBox">
-       <property name="toolTip">
-        <string notr="true"/>
-       </property>
-       <property name="statusTip">
-        <string notr="true"/>
-       </property>
-       <property name="whatsThis">
-        <string notr="true"/>
-       </property>
-       <property name="accessibleName">
-        <string notr="true"/>
-       </property>
-       <property name="accessibleDescription">
-        <string notr="true"/>
-       </property>
-       <property name="currentText">
-        <string notr="true">North-America</string>
-       </property>
-       <item>
-        <property name="text">
-         <string notr="true">North-America</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string notr="true">Japan</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string notr="true">Europe</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string notr="true">Oceania</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string notr="true">China</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string notr="true">中国</string>
-        </property>
-       </item>
-      </widget>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QTableView" name="currentTableView"/>
      </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="regionLabel">
+      <widget class="QLabel" name="currentLabel">
        <property name="text">
-        <string>Region:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="dcLabel">
-       <property name="text">
-        <string>Data Center:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="worldLabel">
-       <property name="text">
-        <string>World:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="dcComboBox">
-       <property name="toolTip">
-        <string notr="true"/>
-       </property>
-       <property name="statusTip">
-        <string notr="true"/>
-       </property>
-       <property name="whatsThis">
-        <string notr="true"/>
-       </property>
-       <property name="accessibleName">
-        <string notr="true"/>
-       </property>
-       <property name="accessibleDescription">
-        <string notr="true"/>
-       </property>
-       <property name="currentText">
-        <string notr="true"/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="worldComboBox">
-       <property name="toolTip">
-        <string notr="true"/>
-       </property>
-       <property name="statusTip">
-        <string notr="true"/>
-       </property>
-       <property name="whatsThis">
-        <string notr="true"/>
-       </property>
-       <property name="accessibleName">
-        <string notr="true"/>
-       </property>
-       <property name="accessibleDescription">
-        <string notr="true"/>
-       </property>
-       <property name="currentText">
-        <string notr="true"/>
+        <string>Current Listings:</string>
        </property>
       </widget>
      </item>
@@ -223,7 +297,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1508</width>
+     <width>983</width>
      <height>31</height>
     </rect>
    </property>

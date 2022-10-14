@@ -1,5 +1,4 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-import gui
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import universalisAPI as uapi
 import fetchItemIDs as fetch
 import sys
@@ -10,42 +9,46 @@ DC_JSON = uapi.data_centers()
 WORLDS = uapi.worlds()
 MARKETABLE_ITEMS = uapi.marketable_items()
 
-class GUI(object):
+class GUI(QtWidgets.QMainWindow):
     def __init__(self):
-        app = QtWidgets.QApplication(sys.argv)
-        MainWindow = QtWidgets.QMainWindow()
-        self.ui = gui.Ui_MainWindow()
-        self.ui.setupUi(MainWindow)
+        super(GUI, self).__init__()
+        uic.loadUi(r'./gui.ui', self)
 
         self._set_custom_action()
         self.data_center_menu_update()
         self._hide_shortcuts()
 
-        MainWindow.show()
-        sys.exit(app.exec_())
+        self.show()
+        # sys.exit(app.exec_())
 
     def _set_custom_action(self):
         """
         This prevents problems that can be caused by copying the code created by pyqt convertion
         """
-        self.ui.addButton.clicked.connect(self.add_item_by_id)
-        self.ui.idList.itemClicked.connect(self.idList_selection)
-        self.ui.nameList.itemClicked.connect(self.nameList_selection)
-        self.ui.regionComboBox.currentIndexChanged.connect(self.data_center_menu_update)
-        self.ui.dcComboBox.currentIndexChanged.connect(self.world_menu_update)
-        # self.ui.clearButton.clicked.connect(self.default_dc_world_list)
+        self.addButton.clicked.connect(self.add_item_by_id)
+        self.idList.itemClicked.connect(self.idList_selection)
+        self.nameList.itemClicked.connect(self.nameList_selection)
+        self.regionComboBox.currentIndexChanged.connect(self.data_center_menu_update)
+        self.dcComboBox.currentIndexChanged.connect(self.world_menu_update)
+        self.queryButton.clicked.connect(self.test)
+        # self.clearButton.clicked.connect(self.default_dc_world_list)
 
         # Hidden menubar items, because by default there can only be one shortcut assigned
-        self.ui.actionAdd.triggered.connect(self.ui.addButton.click)
+        self.actionAdd.triggered.connect(self.addButton.click)
     
     def _hide_shortcuts(self):
         """
         When setting the title of a menubar title it 'disables' it, but if it is set invisable the items in it cannot be interacted with (even if they have shortcuts set up)
         """
-        self.ui.menuShortcuts.setTitle('')
+        self.menuShortcuts.setTitle('')
 
     def add_item_by_id(self):
-        idnum = int(self.ui.itemIdAdd.text())
+        text_field = self.itemIdAdd.text()
+        if text_field == '':
+            # If there is nothing in the entry field it cannot be cast to int
+            return
+
+        idnum = int(text_field)
         try:
             item_name = fetch.get_item_name(idnum)
         except:
@@ -55,55 +58,41 @@ class GUI(object):
         if item_name == '':
             return
 
-        self.ui.idList.addItem(str(idnum))
-        self.ui.nameList.addItem(item_name)
+        self.idList.addItem(str(idnum))
+        self.nameList.addItem(item_name.title()) # Title capitializes the first leter of each word
     
     def idList_selection(self):
-        self.ui.nameList.clearSelection()
+        self.nameList.clearSelection()
     
     def nameList_selection(self):
-        self.ui.idList.clearSelection()
+        self.idList.clearSelection()
 
     def data_center_menu_update(self):
-        region = self.ui.regionComboBox.currentText()
+        region = self.regionComboBox.currentText()
         data_centers = dc_list(region)
-        self.ui.dcComboBox.clear()
-        self.ui.dcComboBox.addItem('All')
+        self.dcComboBox.clear()
+        self.dcComboBox.addItem('All')
         for i in range(0, len(data_centers)):
             dc = data_centers[i][0]
-            self.ui.dcComboBox.addItem(dc)
-        self.ui.worldComboBox.addItem('-')
+            self.dcComboBox.addItem(dc)
+        self.worldComboBox.addItem('-')
 
     def world_menu_update(self):
-        region = self.ui.regionComboBox.currentText()
-        dc = self.ui.dcComboBox.currentText()
-        self.ui.worldComboBox.clear()
+        region = self.regionComboBox.currentText()
+        dc = self.dcComboBox.currentText()
+        self.worldComboBox.clear()
         if dc == 'All':
-            self.ui.worldComboBox.addItem('-')
+            self.worldComboBox.addItem('-')
             return
 
-        self.ui.worldComboBox.addItem('All')
+        self.worldComboBox.addItem('All')
         world_names = world_list(dc, dc_list(region))
 
         for world in world_names:
-            self.ui.worldComboBox.addItem(world)
+            self.worldComboBox.addItem(world)
     
-    # def default_dc_world_list(self):
-    #     region = self.ui.regionComboBox.currentText()
-    #     data_centers = dc_list(region)
-    #     self.ui.dcComboBox.addItem('All')
-    #     for i in range(0, len(data_centers)):
-    #         dc = data_centers[i][0]
-    #         self.ui.dcComboBox.addItem(dc)
-    #     self.ui.worldComboBox.addItem('-')
 
     def test(self):
-        # selected = self.idList.selectedIndexes()[0].row()
-        # print(selected)
-        # print(self.ui.regionComboBox.currentText())
-        # self.ui.dcComboBox.clear()
-        # self.ui.dcComboBox.addItem('All')
-        # self.comboBox_2
         return
 
 def dc_json_to_pandas() -> pd.DataFrame:
@@ -149,6 +138,8 @@ def world_list(data_center:str, dc_info:list) -> list:
     return None
 
 if __name__ == "__main__":
-    ui = GUI()
+    app = QtWidgets.QApplication(sys.argv)
+    window = GUI()
+    app.exec_()
 
     # print('asdfasdfasdf')
