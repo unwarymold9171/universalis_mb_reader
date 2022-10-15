@@ -2,6 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import universalisAPI as uapi
 import fetchItemIDs as fetch
 import sys
+import re
+import os
 import pandas as pd
 import json
 
@@ -14,16 +16,13 @@ class GUI(QtWidgets.QMainWindow):
         super(GUI, self).__init__()
         uic.loadUi(r'./gui.ui', self)
 
-        self._set_custom_action()
+        self.__set_custom_actions__()
         self.data_center_menu_update()
-        self._hide_shortcuts()
+        self.__hide_shortcuts__()
 
-        self.show()
-        # sys.exit(app.exec_())
-
-    def _set_custom_action(self):
+    def __set_custom_actions__(self):
         """
-        This prevents problems that can be caused by copying the code created by pyqt convertion
+        This method helps set up each button to work as expected
         """
         self.addButton.clicked.connect(self.add_item_by_id)
         self.idList.itemClicked.connect(self.idList_selection)
@@ -36,11 +35,53 @@ class GUI(QtWidgets.QMainWindow):
         # Hidden menubar items, because by default there can only be one shortcut assigned
         self.actionAdd.triggered.connect(self.addButton.click)
     
-    def _hide_shortcuts(self):
+    def __hide_shortcuts__(self):
         """
-        When setting the title of a menubar title it 'disables' it, but if it is set invisable the items in it cannot be interacted with (even if they have shortcuts set up)
+        When setting the title of a menubar title it 'disables' it, but if it is set as hidden the items in it cannot be interacted with
         """
         self.menuShortcuts.setTitle('')
+
+    def idList_selection(self):
+        """
+        If an element in the idList is selected deselect any selection in nameList
+        """
+        self.nameList.clearSelection()
+    
+    def nameList_selection(self):
+        """
+        If an element in the nameList is selected deselect any selection in idList
+        """
+        self.idList.clearSelection()
+
+    def data_center_menu_update(self):
+        """
+        When a region is selected, update the dropdown menu to the data centers from that region
+        """
+        region = self.regionComboBox.currentText()
+        data_centers = dc_list(region)
+        self.dcComboBox.clear()
+        self.dcComboBox.addItem('All')
+        for i in range(0, len(data_centers)):
+            dc = data_centers[i][0]
+            self.dcComboBox.addItem(dc)
+        self.worldComboBox.addItem('-')
+
+    def world_menu_update(self):
+        """
+        When a data center is selected, update the dropdown menu to the worlds in that data center
+        """
+        region = self.regionComboBox.currentText()
+        dc = self.dcComboBox.currentText()
+        self.worldComboBox.clear()
+        if dc == 'All':
+            self.worldComboBox.addItem('-')
+            return
+
+        self.worldComboBox.addItem('All')
+        world_names = world_list(dc, dc_list(region))
+
+        for world in world_names:
+            self.worldComboBox.addItem(world)
 
     def add_item_by_id(self):
         text_field = self.itemIdAdd.text()
@@ -54,46 +95,26 @@ class GUI(QtWidgets.QMainWindow):
         except:
             # It is posible to enter a number out of the range of items
             return
-        
+
         if item_name == '':
             return
 
         self.idList.addItem(str(idnum))
-        self.nameList.addItem(item_name.title()) # Title capitializes the first leter of each word
-    
-    def idList_selection(self):
-        self.nameList.clearSelection()
-    
-    def nameList_selection(self):
-        self.idList.clearSelection()
-
-    def data_center_menu_update(self):
-        region = self.regionComboBox.currentText()
-        data_centers = dc_list(region)
-        self.dcComboBox.clear()
-        self.dcComboBox.addItem('All')
-        for i in range(0, len(data_centers)):
-            dc = data_centers[i][0]
-            self.dcComboBox.addItem(dc)
-        self.worldComboBox.addItem('-')
-
-    def world_menu_update(self):
-        region = self.regionComboBox.currentText()
-        dc = self.dcComboBox.currentText()
-        self.worldComboBox.clear()
-        if dc == 'All':
-            self.worldComboBox.addItem('-')
-            return
-
-        self.worldComboBox.addItem('All')
-        world_names = world_list(dc, dc_list(region))
-
-        for world in world_names:
-            self.worldComboBox.addItem(world)
-    
+        self.nameList.addItem(titlecase(item_name)) # Title capitializes the first leter of each word
 
     def test(self):
         return
+
+
+def titlecase(s:str) -> str:
+    """
+    This function will work similary to str.title() except for it will only capitalize after a space
+    """
+    return re.sub(
+        r"[A-Za-z]+('[A-Za-z]+)?",
+        lambda word: word.group(0).capitalize(),
+        s
+    )
 
 def dc_json_to_pandas() -> pd.DataFrame:
     """
