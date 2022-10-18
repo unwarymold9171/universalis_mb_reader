@@ -37,7 +37,7 @@ class GUI(QtWidgets.QMainWindow):
         # self.clearButton.clicked.connect(self.default_dc_world_list)
 
         # Hidden menubar items, because by default there can only be one shortcut assigned
-        self.actionAdd.triggered.connect(self.addButton.click)
+        self.actionAdd.triggered.connect(self.add_item_by_id)
     
     def __hide_shortcuts__(self) -> None:
         """
@@ -140,7 +140,46 @@ class GUI(QtWidgets.QMainWindow):
         self.idList.addItem(str(idnum))
         self.nameList.addItem(titlecase(item_name)) # Title capitializes the first leter of each word
 
+        self.itemIdAdd.setText('') # Blank out the entry field if it is able to be added to the list
+
     def test(self):
+        items = self.idList.count()
+        item_ids = []
+        region = self.regionComboBox.currentText()
+        dc = self.dcComboBox.currentText()
+        world = self.worldComboBox.currentText()
+
+        for i in range(0, items):
+            item_ids.append(self.idList.item(i).text())
+
+        current_mb_data = uapi.retrieve_current_marketboard_data(item_ids, region)
+        # print(current_mb_data)
+
+        mb_returns = []
+        if items == 1:
+            if int(item_ids[0]) in MARKETABLE_ITEMS:
+                df_current_data = interperate_current_mb(current_mb_data)
+
+                returns = MarketBoard_Return(self.nameList.item(0).text(),
+                    item_ids[0], df_current_data, None, region)
+                mb_returns.append(returns)
+
+        else:
+            for item_id in item_ids:
+                i = item_ids.index(item_id)
+                if int(item_id) in MARKETABLE_ITEMS:
+                    df_current_data = interperate_current_mb(current_mb_data['items'][item_id])
+
+                    returns = MarketBoard_Return(self.nameList.item(i).text(),
+                        item_id, df_current_data, None, region)
+                    mb_returns.append(returns)
+
+        self.mb_returns = mb_returns
+
+        for bm_return in mb_returns:
+            print(bm_return)
+            self.listingsList.addItem(str(bm_return))
+
         return
 
 
