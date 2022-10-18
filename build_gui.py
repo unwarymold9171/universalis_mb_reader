@@ -52,6 +52,7 @@ class GUI(QtWidgets.QMainWindow):
         self.region = ''
         self.dc = ''
         self.world = ''
+        self.mb_returns = []
 
     def __save_state__(self, exportState:bool=False) -> None:
         """
@@ -143,6 +144,52 @@ class GUI(QtWidgets.QMainWindow):
         return
 
 
+class MarketBoard_Return(object):
+    """
+    This class object acts as a large data container with the current and historical listings and acts as the input for the sub-windows
+    """
+    def __init__(self, itemName:str, itemID:int, current_marketboard_returns:pd.DataFrame, historical_marketboard_returns:pd.DataFrame, region:str) -> None:
+        self.itemName = itemName
+        self.itemID = itemID
+        self.region = region
+        self.listings = Current_Item_Listings(current_marketboard_returns, self.region)
+        self.history = None
+
+    def __str__(self) -> str:
+        return self.itemName
+
+    def filter_by_dc(self, dcName:str='All'):
+        current = self.listings.dc_listings(dcName)
+        # TODO history = self.history.dc_listings(dcName)
+        return current #, history
+
+    def filter_by_world(self, world:str='All'):
+        current = self.listings.world_listings(world)
+        # TODO history = self.history.world_listings(world)
+        return current #, history
+
+class Current_Item_Listings(object):
+    def __init__(self, marketboard_returns:pd.DataFrame, region:str) -> None:
+        self.entries = marketboard_returns
+        self.region = region
+
+    def dc_listings(self, dcName:str='All') -> pd.DataFrame:
+        worldList = []
+        df = self.entries
+        if not dcName == 'All':
+            worldList = world_list(dcName, dc_list(self.region))
+            filtered = df.loc[df['World'].isin(worldList)]
+            return filtered
+
+        return df
+
+    def world_listings(self, world:str='All'):
+        df = self.entries
+        if not world == 'All':
+            filtered = df.loc[df['World'] == world]
+            return filtered
+        return df
+
 def titlecase(s:str) -> str:
     """
     This function will work similary to str.title() except for it will only capitalize after a space
@@ -195,7 +242,7 @@ def world_list(data_center:str, dc_info:list) -> list:
 
     return None
 
-def interperate_current_mb(data:json, region:str=None, dcName:str='All', worldName:str='All') -> pd.DataFrame:
+def interperate_current_mb(data:json) -> pd.DataFrame:
     """
     This method takes an individual entry from universalis and translates it into a usable dataframe
         Note: This data is pre-sorted and does not need sorting
@@ -212,13 +259,6 @@ def interperate_current_mb(data:json, region:str=None, dcName:str='All', worldNa
     materia = []
     retainerNames = []
     total = []
-    # listings = []
-
-    worldList = []
-    if not dcName == 'All':
-        assert(not region == None)
-        # If the dcName is set to all we do not need to care about the region and it can be a skipped entry
-        worldList = world_list(dcName, dc_list(region))
 
     for listing in data['listings']:
         """
@@ -230,22 +270,6 @@ def interperate_current_mb(data:json, region:str=None, dcName:str='All', worldNa
             retainerCity, retainerID, sellerID
         """
 
-        if not dcName == 'All':
-            # if the data center is not set as the generic entry
-            # check if the world is part of the dc
-            # print(worldList)
-            if listing['worldName'] not in worldList:
-                # print(worldName)
-                # if not part of the dc skip it
-                continue
-
-            if not (worldName == 'All' or listing['worldName'] == worldName):
-                # if the user selected a world to filter the results to,
-                # and the the listing is not from the world they filtered the results to
-                # skip this entry
-                continue
-
-        # If the entry passed the dc/world check add the entry to the future dataframe fields
         ppu.append(listing['pricePerUnit'])
         quantity.append(listing['quantity'])
         worldNames.append(listing['worldName'])
@@ -253,7 +277,6 @@ def interperate_current_mb(data:json, region:str=None, dcName:str='All', worldNa
         materia.append(listing['materia'])
         retainerNames.append(listing['retainerName'])
         total.append(listing['total'])
-        # listings.append(listing) # back up
 
     # Make the dataframe
     mb_data = pd.DataFrame({'Price Per Unit':ppu, 'Quantity':quantity, 'Total':total, 'HQ':hq,
