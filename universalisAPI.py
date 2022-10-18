@@ -40,6 +40,11 @@ def worlds() -> json:
     return api_return
 
 def marketable_items() -> json:
+    """
+    Description
+    ------
+    Returns a list of all marketable items accoring to the API.
+    """
     api_call = MARKETABLE_ITEMS
 
     url = requests.get(api_call)
@@ -135,7 +140,7 @@ def retrieve_marketboard_history(item_Ids:list, worldDcRegion:str='North-America
     #?listings=1&entries=2&noGst=3&hq=4&statsWithin=5&entriesWithin=6
 
     if not entriesToReturn == None:
-        api_call = api_call + 'listings=' + str(entriesToReturn)
+        api_call = api_call + 'entriesToReturn=' + str(entriesToReturn)
     if not statsWithin == None:
         api_call = api_call + 'statsWithin=' + str(statsWithin)
     if not entriesWithin == None:
@@ -150,7 +155,7 @@ def retrieve_marketboard_history(item_Ids:list, worldDcRegion:str='North-America
 
 if __name__ == '__main__':
     current_mb = retrieve_current_marketboard_data([37833], noGst=True, listings=100)
-    api_return = retrieve_marketboard_history([37833], entriesToReturn=100)
+    api_return = retrieve_marketboard_history([37833, 34567], entriesToReturn=100) #
 
 
     print(api_return)

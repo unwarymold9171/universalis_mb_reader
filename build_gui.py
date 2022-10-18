@@ -212,6 +212,9 @@ class Current_Item_Listings(object):
         self.entries = marketboard_returns
         self.region = region
 
+    def __str__(self) -> str:
+        return str(self.entries)
+
     def dc_listings(self, dcName:str='All') -> pd.DataFrame:
         worldList = []
         df = self.entries
