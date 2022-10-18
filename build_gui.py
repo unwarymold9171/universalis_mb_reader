@@ -16,11 +16,15 @@ class GUI(QtWidgets.QMainWindow):
         super(GUI, self).__init__()
         uic.loadUi(r'./gui.ui', self)
 
+        self.__setup_vars__()
+
         self.__set_custom_actions__()
         self.data_center_menu_update()
         self.__hide_shortcuts__()
 
-    def __set_custom_actions__(self):
+        self.__save_state__()
+
+    def __set_custom_actions__(self) -> None:
         """
         This method helps set up each button to work as expected
         """
@@ -35,29 +39,57 @@ class GUI(QtWidgets.QMainWindow):
         # Hidden menubar items, because by default there can only be one shortcut assigned
         self.actionAdd.triggered.connect(self.addButton.click)
     
-    def __hide_shortcuts__(self):
+    def __hide_shortcuts__(self) -> None:
         """
         When setting the title of a menubar title it 'disables' it, but if it is set as hidden the items in it cannot be interacted with
         """
         self.menuShortcuts.setTitle('')
 
-    def idList_selection(self):
+    def __setup_vars__(self) -> None:
+        """
+        These are variables that will be refrenced when checking an objects last state
+        """
+        self.region = ''
+        self.dc = ''
+        self.world = ''
+
+    def __save_state__(self, exportState:bool=False) -> None:
+        """
+        This is saves the current state of the GUI's important elements that may be used later for checking the last state
+        """
+        self.region = self.regionComboBox.currentText()
+        self.dc = self.dcComboBox.currentText()
+        self.world = self.worldComboBox.currentText()
+
+        if exportState:
+            state = {
+                'region': self.region,
+                'dc': self.dc,
+                'world': self.world
+                }
+            # TODO Save this as a .json that can be loaded later
+
+
+    def idList_selection(self) -> None:
         """
         If an element in the idList is selected deselect any selection in nameList
         """
         self.nameList.clearSelection()
-    
-    def nameList_selection(self):
+
+    def nameList_selection(self) -> None:
         """
         If an element in the nameList is selected deselect any selection in idList
         """
         self.idList.clearSelection()
 
-    def data_center_menu_update(self):
+    def data_center_menu_update(self) -> None:
         """
         When a region is selected, update the dropdown menu to the data centers from that region
         """
         region = self.regionComboBox.currentText()
+        if region == self.region:
+            # Check if the new state is the same as the last state
+            return
         data_centers = dc_list(region)
         self.dcComboBox.clear()
         self.dcComboBox.addItem('All')
@@ -65,13 +97,17 @@ class GUI(QtWidgets.QMainWindow):
             dc = data_centers[i][0]
             self.dcComboBox.addItem(dc)
         self.worldComboBox.addItem('-')
+        self.__save_state__()
 
-    def world_menu_update(self):
+    def world_menu_update(self) -> None:
         """
         When a data center is selected, update the dropdown menu to the worlds in that data center
         """
         region = self.regionComboBox.currentText()
         dc = self.dcComboBox.currentText()
+        if dc == self.dc:
+            # Check if the new state is the same as the last state
+            return
         self.worldComboBox.clear()
         if dc == 'All':
             self.worldComboBox.addItem('-')
@@ -82,8 +118,9 @@ class GUI(QtWidgets.QMainWindow):
 
         for world in world_names:
             self.worldComboBox.addItem(world)
+        self.__save_state__()
 
-    def add_item_by_id(self):
+    def add_item_by_id(self) -> None:
         text_field = self.itemIdAdd.text()
         if text_field == '':
             # If there is nothing in the entry field it cannot be cast to int
@@ -164,6 +201,7 @@ def interperate_current_mb(data:json, region:str=None, dcName:str='All', worldNa
         Note: This data is pre-sorted and does not need sorting
 
     Specifying a dcName requires a region to be set, and will filter entries to only that data center
+
     Specifying a world name will filter down to only entries from that world otherwise it will check all worlds
     """
 
@@ -225,6 +263,7 @@ def interperate_current_mb(data:json, region:str=None, dcName:str='All', worldNa
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = GUI()
+    window.show()
     app.exec_()
 
     # print('asdfasdfasdf')
