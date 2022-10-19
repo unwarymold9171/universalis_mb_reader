@@ -3,7 +3,6 @@ import universalisAPI as uapi
 import fetchItemIDs as fetch
 import sys
 import re
-import os
 import pandas as pd
 import json
 
@@ -212,12 +211,30 @@ class MarketBoard_Return(object):
         return current #, history
 
 class Current_Item_Listings(object):
-    def __init__(self, marketboard_returns:json, region:str) -> None:
+    def __init__(self, marketboard_returns:dict, region:str) -> None:
         # self.entries = marketboard_returns
         self.region = region
+        self.itemID = marketboard_returns['itemID']
+        self.currentAveragePrice = marketboard_returns['currentAveragePrice']
+        self.currentAveragePriceNQ = marketboard_returns['currentAveragePriceNQ']
+        self.currentAveragePriceHQ = marketboard_returns['currentAveragePriceHQ']
+        self.saleVelocity = marketboard_returns['regularSaleVelocity']
+        self.saleVelocityNQ = marketboard_returns['nqSaleVelocity']
+        self.saleVelocityHQ = marketboard_returns['hqSaleVelocity']
+        self.averagePrice = marketboard_returns['averagePrice']
+        self.averagePriceNQ = marketboard_returns['averagePriceNQ']
+        self.averagePriceHQ = marketboard_returns['averagePriceHQ']
+        self.minPrice = marketboard_returns['minPrice']
+        self.minPriceNQ = marketboard_returns['minPriceNQ']
+        self.minPriceHQ = marketboard_returns['minPriceHQ']
+        self.maxPrice = marketboard_returns['maxPrice']
 
+        """
+        stackSizeHistogram, stackSizeHistorgramNQ, stackSizeHistogramHQ
+        """
+
+        # Interperate the marketboard listings
         ppu, quantity, worldNames, hq, materia, retainerNames, total = [],[],[],[],[],[],[]
-
         for listing in marketboard_returns['listings']:
             """
             Used entries from the listing: pricePerUnit, quantity, worldName, hq,
@@ -236,7 +253,7 @@ class Current_Item_Listings(object):
             retainerNames.append(listing['retainerName'])
             total.append(listing['total'])
 
-        # Make the dataframe
+        # Make a dataframe with all the listings
         self.entries = pd.DataFrame({'Price Per Unit':ppu, 'Quantity':quantity, 'Total':total, 'HQ':hq,
             'Materia':materia, 'Retaner':retainerNames, 'World': worldNames})
 
@@ -261,12 +278,12 @@ class Current_Item_Listings(object):
         return df
 
 class Historical_Item_Listings(object):
-    def __inti__(self, marketboard_returns:json, region:str):
+    def __inti__(self, marketboard_returns:dict, region:str):
         self.region = region
 
         # TODO
         """
-        itemID, lastUploadTime, entries, region, stackSizeHistogram, stackSizeHistorgramNQ, stackSizeHistogramHQ, regularSaleVelocity, nqSaleVelocity, hqSaleVelocity
+        itemID, lastUploadTime, entries, regionName, stackSizeHistogram, stackSizeHistorgramNQ, stackSizeHistogramHQ, regularSaleVelocity, nqSaleVelocity, hqSaleVelocity
 
         entries: [{hq, pricePerUnit, quantity, buyerName, onMannequin, timestamp, worldName, worldID},...]
         stackSizeHistogram: {'1':#, '2':# ...}

@@ -13,7 +13,7 @@ MARKETABLE_ITEMS = 'https://universalis.app/api/v2/marketable'
 CURRENT_MB_DATA = 'https://universalis.app/api/v2/'
 MB_SALE_HISTORY = 'https://universalis.app/api/v2/history/'
 
-def data_centers() -> json:
+def data_centers() -> dict:
     """
     Description
     ------
@@ -26,7 +26,7 @@ def data_centers() -> json:
 
     return api_return
 
-def worlds() -> json:
+def worlds() -> dict:
     """
     Description
     ------
@@ -39,7 +39,7 @@ def worlds() -> json:
 
     return api_return
 
-def marketable_items() -> json:
+def marketable_items() -> dict:
     """
     Description
     ------
@@ -52,7 +52,7 @@ def marketable_items() -> json:
 
     return api_return
 
-def retrieve_current_marketboard_data(item_Ids:list, worldDcRegion:str='North-America', listings:int=None, entries:int=None, noGst:bool=None, hq:bool=None, statsWithin:int=None, entriesWithin:int=None) -> json:
+def retrieve_current_marketboard_data(item_Ids:list, worldDcRegion:str='North-America', listings:int=None, entries:int=None, noGst:bool=None, hq:bool=None, statsWithin:int=None, entriesWithin:int=None) -> dict:
     """
     Description
     ------
@@ -109,7 +109,7 @@ def retrieve_current_marketboard_data(item_Ids:list, worldDcRegion:str='North-Am
 
     return api_return
 
-def retrieve_marketboard_history(item_Ids:list, worldDcRegion:str='North-America', entriesToReturn:int=None, statsWithin:int=None, entriesWithin:int=None) -> json:
+def retrieve_marketboard_history(item_Ids:list, worldDcRegion:str='North-America', entriesToReturn:int=None, statsWithin:int=None, entriesWithin:int=None) -> dict:
     """
     Description
     ------
