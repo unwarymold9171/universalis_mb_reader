@@ -14,7 +14,7 @@ MARKETABLE_ITEMS = uapi.marketable_items()
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
         super(GUI, self).__init__()
-        uic.loadUi(r'./gui.ui', self)
+        uic.loadUi('gui.ui', self)
 
         self.__setup_vars__()
 
@@ -153,31 +153,29 @@ class GUI(QtWidgets.QMainWindow):
             item_ids.append(self.idList.item(i).text())
 
         current_mb_data = uapi.retrieve_current_marketboard_data(item_ids, region)
-        # print(current_mb_data)
+        histoical_mb_data = uapi.retrieve_marketboard_history(item_ids, region, entriesToReturn=100)
 
         mb_returns = []
         if items == 1:
             if int(item_ids[0]) in MARKETABLE_ITEMS:
-                df_current_data = interperate_current_mb(current_mb_data)
-
                 returns = MarketBoard_Return(self.nameList.item(0).text(),
-                    item_ids[0], df_current_data, None, region)
+                    item_ids[0], current_mb_data, histoical_mb_data, region)
+
                 mb_returns.append(returns)
 
         else:
             for item_id in item_ids:
                 i = item_ids.index(item_id)
                 if int(item_id) in MARKETABLE_ITEMS:
-                    df_current_data = interperate_current_mb(current_mb_data['items'][item_id])
-
                     returns = MarketBoard_Return(self.nameList.item(i).text(),
-                        item_id, df_current_data, None, region)
+                        int(item_id), current_mb_data['items'][item_id], histoical_mb_data['items'][item_id], region)
+
                     mb_returns.append(returns)
 
         self.mb_returns = mb_returns
 
         for bm_return in mb_returns:
-            print(bm_return)
+            bm_return.print()
             self.listingsList.addItem(str(bm_return))
 
         return
@@ -197,6 +195,12 @@ class MarketBoard_Return(object):
     def __str__(self) -> str:
         return self.itemName
 
+    def print(self):
+        print((self.itemName, self.itemID))
+        print('Region: ' + self.region)
+        print(self.listings)
+        # print(self.history) TODO
+
     def filter_by_dc(self, dcName:str='All'):
         current = self.listings.dc_listings(dcName)
         # TODO history = self.history.dc_listings(dcName)
@@ -208,9 +212,33 @@ class MarketBoard_Return(object):
         return current #, history
 
 class Current_Item_Listings(object):
-    def __init__(self, marketboard_returns:pd.DataFrame, region:str) -> None:
-        self.entries = marketboard_returns
+    def __init__(self, marketboard_returns:json, region:str) -> None:
+        # self.entries = marketboard_returns
         self.region = region
+
+        ppu, quantity, worldNames, hq, materia, retainerNames, total = [],[],[],[],[],[],[]
+
+        for listing in marketboard_returns['listings']:
+            """
+            Used entries from the listing: pricePerUnit, quantity, worldName, hq,
+                materia, retainerName, total
+
+            Unused entries from the listing: lastReviewTime, stainID, worldID,
+                creatorName, creatorID, isCrafted, listingID, onMannequin,
+                retainerCity, retainerID, sellerID
+            """
+
+            ppu.append(listing['pricePerUnit'])
+            quantity.append(listing['quantity'])
+            worldNames.append(listing['worldName'])
+            hq.append(listing['hq'])
+            materia.append(listing['materia'])
+            retainerNames.append(listing['retainerName'])
+            total.append(listing['total'])
+
+        # Make the dataframe
+        self.entries = pd.DataFrame({'Price Per Unit':ppu, 'Quantity':quantity, 'Total':total, 'HQ':hq,
+            'Materia':materia, 'Retaner':retainerNames, 'World': worldNames})
 
     def __str__(self) -> str:
         return str(self.entries)
@@ -231,6 +259,26 @@ class Current_Item_Listings(object):
             filtered = df.loc[df['World'] == world]
             return filtered
         return df
+
+class Historical_Item_Listings(object):
+    def __inti__(self, marketboard_returns:json, region:str):
+        self.region = region
+
+        # TODO
+        """
+        itemID, lastUploadTime, entries, region, stackSizeHistogram, stackSizeHistorgramNQ, stackSizeHistogramHQ, regularSaleVelocity, nqSaleVelocity, hqSaleVelocity
+
+        entries: [{hq, pricePerUnit, quantity, buyerName, onMannequin, timestamp, worldName, worldID},...]
+        stackSizeHistogram: {'1':#, '2':# ...}
+        regularSaleVelocity: float
+
+        API data:
+            // The average number of sales per day, over the past seven days (or the entirety of the shown sales, whichever comes first).
+            // This number will tend to be the same for every item, because the number of shown sales is the same and over the same period.
+            // This statistic is more useful in historical queries.
+            regularSaleVelocity: number;
+        """
+        entries = marketboard_returns['entries']
 
 def titlecase(s:str) -> str:
     """
@@ -284,47 +332,6 @@ def world_list(data_center:str, dc_info:list) -> list:
 
     return None
 
-def interperate_current_mb(data:json) -> pd.DataFrame:
-    """
-    This method takes an individual entry from universalis and translates it into a usable dataframe
-        Note: This data is pre-sorted and does not need sorting
-
-    Specifying a dcName requires a region to be set, and will filter entries to only that data center
-
-    Specifying a world name will filter down to only entries from that world otherwise it will check all worlds
-    """
-
-    ppu = []
-    quantity = []
-    worldNames = []
-    hq = []
-    materia = []
-    retainerNames = []
-    total = []
-
-    for listing in data['listings']:
-        """
-        Used entries from the listing: pricePerUnit, quantity, worldName, hq,
-            materia, retainerName, total
-
-        Unused entries from the listing: lastReviewTime, stainID, worldID,
-            creatorName, creatorID, isCrafted, listingID, onMannequin,
-            retainerCity, retainerID, sellerID
-        """
-
-        ppu.append(listing['pricePerUnit'])
-        quantity.append(listing['quantity'])
-        worldNames.append(listing['worldName'])
-        hq.append(listing['hq'])
-        materia.append(listing['materia'])
-        retainerNames.append(listing['retainerName'])
-        total.append(listing['total'])
-
-    # Make the dataframe
-    mb_data = pd.DataFrame({'Price Per Unit':ppu, 'Quantity':quantity, 'Total':total, 'HQ':hq,
-        'Materia':materia, 'Retaner':retainerNames, 'World': worldNames})
-
-    return mb_data
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = GUI()
